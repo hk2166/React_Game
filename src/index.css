@@ -1,0 +1,844 @@
+@font-face {
+  font-family: "Geist";
+  src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
+}
+
+:root {
+  --size: 20px;
+  --container-padding: 2rem;
+  --letter-box-size: 50px;
+  --keyboard-max-width: 600px;
+  font-family: "Geist", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@keyframes gradientEasy {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradientMedium {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes gradientHard {
+  0% {
+    background-position: 50% 0%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+  75% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 50% 0%;
+  }
+}
+
+@keyframes floatingBubbles {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 -1000px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  background: hsl(0 0% 6%);
+}
+
+.background-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: conic-gradient(
+    from 180deg at 50% 70%,
+    hsla(0,0%,98%,1) 0deg,
+    #eec32d 72.0000010728836deg,
+    #ec4b4b 144.0000021457672deg,
+    #709ab9 216.00000858306885deg,
+    #4dffbf 288.0000042915344deg,
+    hsla(0,0%,98%,1) 1turn
+  );
+  mask:
+    radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
+    url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
+  mask-composite: intersect;
+  animation: flicker 20s infinite linear;
+}
+
+@keyframes flicker {
+  to {
+    mask-position: 50% 50%, 0 50%;
+  }
+}
+
+body::before {
+  display: none;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--container-padding);
+  position: relative;
+  z-index: 1;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  padding: var(--container-padding);
+  border-radius: 12px;
+  transition: all 0.5s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(10, 10, 10, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  margin: 0 auto;
+}
+
+.game-container.easy {
+  background-color: rgba(240, 249, 255, 0.9);
+  color: #333;
+  box-shadow: 0 8px 32px 0 rgba(77, 208, 225, 0.37);
+}
+
+.game-container.medium {
+  background-color: rgba(26, 26, 46, 0.95);
+  color: #fff;
+  box-shadow: 0 8px 32px 0 rgba(33, 150, 243, 0.37);
+}
+
+.game-container.hard {
+  background-color: rgba(10, 10, 10, 0.95);
+  color: #ff4444;
+  box-shadow: 0 8px 32px 0 rgba(255, 0, 0, 0.37);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.difficulty-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.difficulty-selector button {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.difficulty-selector button.active {
+  transform: scale(1.1);
+}
+
+.easy .difficulty-selector button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.medium .difficulty-selector button.active {
+  background-color: #2196F3;
+  color: white;
+}
+
+.hard .difficulty-selector button.active {
+  background-color: #f44336;
+  color: white;
+}
+
+.score-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.easy .score-display {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.medium .score-display {
+  background-color: #1a237e;
+  color: #fff;
+}
+
+.hard .score-display {
+  background-color: #b71c1c;
+  color: #fff;
+}
+
+.word-display {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.letter-box {
+  width: var(--letter-box-size);
+  height: var(--letter-box-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.letter-box:not(:empty) {
+  animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.easy .letter-box {
+  border: 2px solid rgba(76, 175, 80, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.medium .letter-box {
+  border: 2px solid rgba(33, 150, 243, 0.8);
+  background-color: rgba(26, 26, 46, 0.9);
+  color: white;
+}
+
+.hard .letter-box {
+  border: 2px solid rgba(244, 67, 54, 0.8);
+  background-color: rgba(10, 10, 10, 0.9);
+  color: #ff4444;
+}
+
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5rem;
+  max-width: var(--keyboard-max-width);
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.key {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.key:not(:disabled):hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.key:not(:disabled):active {
+  transform: translateY(1px) scale(0.95);
+}
+
+.key:disabled {
+  cursor: not-allowed;
+}
+
+.easy .key {
+  background-color: #e8f5e9;
+  color: #333;
+}
+
+.medium .key {
+  background-color: #1a237e;
+  color: white;
+}
+
+.hard .key {
+  background-color: #300;
+  color: #ff4444;
+}
+
+.key.used {
+  opacity: 0.7;
+}
+
+.key.incorrect {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.easy .key.incorrect {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.medium .key.incorrect {
+  background-color: #1a1a2e;
+  color: #ff4444;
+}
+
+.hard .key.incorrect {
+  background-color: #200;
+  color: #ff6666;
+}
+
+.key:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+.easy .keyboard {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.medium .keyboard {
+  background-color: rgba(26, 26, 46, 0.1);
+}
+
+.hard .keyboard {
+  background-color: rgba(10, 10, 10, 0.1);
+}
+
+.clue-container {
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.5s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.easy .clue-container {
+  background-color: #e8f5e9;
+  color: #333;
+}
+
+.medium .clue-container {
+  background-color: #1a237e;
+  color: white;
+}
+
+.hard .clue-container {
+  background-color: #300;
+  color: #ff4444;
+}
+
+.game-status {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.easy .game-status {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.medium .game-status {
+  background-color: #1a237e;
+  color: #fff;
+}
+
+.hard .game-status {
+  background-color: #300;
+  color: #ff4444;
+}
+
+.play-again {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.play-again:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.play-again:active {
+  transform: scale(0.95);
+}
+
+.easy .play-again {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.medium .play-again {
+  background-color: #2196F3;
+  color: white;
+}
+
+.hard .play-again {
+  background-color: #f44336;
+  color: white;
+}
+
+.header,
+.footer {
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+.header a,
+.footer a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.header a:hover,
+.footer a:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.8);
+}
+
+.level-info {
+  text-align: left;
+}
+
+.level-info h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.level-info p {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.easy .level-info {
+  color: #2e7d32;
+}
+
+.medium .level-info {
+  color: #2196F3;
+}
+
+.hard .level-info {
+  color: #f44336;
+}
+
+.game-status p {
+  margin: 0.5rem 0;
+}
+
+@keyframes levelTransition {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.game-container {
+  animation: levelTransition 0.5s ease;
+}
+
+@keyframes glowEffect {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 1rem;
+    --letter-box-size: 35px;
+    --keyboard-max-width: 100%;
+  }
+
+  .game-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .word-display {
+    gap: 0.25rem;
+    font-size: 1.5rem;
+  }
+
+  .letter-box {
+    width: var(--letter-box-size);
+    height: var(--letter-box-size);
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  .key {
+    padding: 0.4em 0.6em;
+    font-size: 0.9em;
+  }
+
+  .game-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .score-display {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+
+  .clue-container {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+
+  .game-status {
+    font-size: 1.2rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --container-padding: 1.5rem;
+    --letter-box-size: 40px;
+    --keyboard-max-width: 90%;
+  }
+
+  .game-container {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.35rem;
+  }
+
+  .key {
+    padding: 0.5em 0.8em;
+    font-size: 0.95em;
+  }
+}
+
+@media (min-width: 769px) {
+  :root {
+    --container-padding: 2rem;
+    --letter-box-size: 55px;
+    --keyboard-max-width: 850px;
+    --game-width: 900px;
+  }
+
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .header {
+    padding: 1.5rem;
+    margin: 0;
+  }
+
+  .footer {
+    padding: 1.5rem;
+    margin: 0;
+  }
+
+  .container {
+    padding: 0;
+  }
+
+  .game-container {
+    width: var(--game-width);
+    padding: 2.5rem;
+    gap: 1.5rem;
+    min-height: unset;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .word-display {
+    gap: 0.8rem;
+    font-size: 2.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.5rem;
+    padding: 1rem;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .key {
+    padding: 0.7em 0.9em;
+    font-size: 1.1em;
+    border-radius: 10px;
+  }
+
+  .game-header {
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .score-display {
+    font-size: 1.6rem;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .clue-container {
+    font-size: 1.2rem;
+    padding: 1rem 1.5rem;
+    max-width: 700px;
+  }
+
+  .game-status {
+    font-size: 1.4rem;
+    padding: 1rem;
+    max-width: 700px;
+    margin: 1rem auto;
+  }
+
+  .level-info h2 {
+    font-size: 1.6rem;
+  }
+
+  .level-info p {
+    font-size: 1.1rem;
+  }
+
+  .game-container > * {
+    flex-shrink: 0;
+  }
+
+  .game-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .game-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  .game-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  .game-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --game-width: 1100px;
+    --letter-box-size: 65px;
+    --keyboard-max-width: 1000px;
+  }
+
+  .game-container {
+    max-height: calc(100vh - 140px);
+    gap: 2rem;
+  }
+
+  .word-display {
+    font-size: 2.8rem;
+  }
+
+  .key {
+    font-size: 1.2em;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .game-container {
+    margin-top: 0.5rem;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .word-display {
+    margin-bottom: 0.5rem;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(13, 1fr);
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  .key {
+    padding: 0.3em 0.5em;
+    font-size: 0.85em;
+  }
+
+  .game-status {
+    margin: 0.5rem 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --letter-box-size: 60px;
+  }
+
+  .game-container {
+    max-width: 1400px;
+  }
+
+  .word-display {
+    font-size: 2.5rem;
+  }
+
+  .key {
+    font-size: 1.1em;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .game-container {
+    background-color: rgba(10, 10, 10, 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+} 
